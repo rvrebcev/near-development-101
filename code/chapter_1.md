@@ -206,7 +206,7 @@ Next, you will be asked to grant permissions to the shell. We will need it to be
 
 As the result, the session in the terminal window is authenticated and you can start deploying contracts and view/call functions.
 
-![](https://raw.githubusercontent.com/dacadeorg/near-development-101/master/content/gifs/login_to_shell.gif)
+![](https://github.com/dacadeorg/near-development-101/raw/master/content/gifs/login_to_shell.gif)
 
 
 ### Create a subaccount for a smart contract
