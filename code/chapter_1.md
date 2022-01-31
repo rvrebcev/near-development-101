@@ -7,7 +7,7 @@ Before jumping to the smart contract itself let's set up a development environme
 ### CLI tools
 
 As long as we are going to use a terminal heavily some CLI tools must be installed:
-* `node` - NodeJS engine that is needed to run applications, in this case - a ReactJS web application
+* `node` - NodeJS engine that is needed to run applications, in this case - a ReactJS web application. NodeJS 12 or higher is required.
 * `yarn` - is a package manager that we are going to use to build smart contracts
 * `near-cli` - a CLI tool for NEAR that offers an API to interact with smart contracts
 * `assemblyscript` - a smart contracts language 
@@ -126,7 +126,7 @@ Next, we need to define a function that would be called to store data.
 Every function that is supposed to be invoked from the outside must be exported.
 So we define a simple write function like this:
 ```javascript=
-export function writeProduct(productName: string, amount: int): void {
+export function setProduct(productName: string, amount: int): void {
     
 }
 ```
@@ -142,13 +142,13 @@ products.set(id, productName)
 
 The string `LISTED_PRODUCTS` in the `PersistentUnorderedMap`'s constructor is the unique prefix to use for every key.
 
-The complete snipper should look like this:
+The complete snippet should look like this:
 ```javascript=
 import { PersistentUnorderedMap } from "near-sdk-as";
 
 export const products = new PersistentUnorderedMap<string, string>("PRODUCTS");
 
-export function writeProduct(id: string, productName: string): void {
+export function setProduct(id: string, productName: string): void {
     products.set(id, productName);
 }
 ```
@@ -168,7 +168,7 @@ The second part `| null` means that if there is no data behind the given key in 
 
 ## Compile, build, and deploy the smart contract
 
-Let's build, deploy and test `writeProduct` and `getProduct` methods before we added more functionalities.
+Let's build, deploy and test `setProduct` and `getProduct` methods before we added more functionalities.
 
 First of all, we need to create an account and log in to the shell with it.
 
@@ -260,17 +260,23 @@ near call ${CONTRACT_NAME} ${METHOD_NAME} ${PAYLOAD} --accountId=${ACCOUNT_ID}
 Now let's replace placeholder values.
 
 ```bash=
-near call mycontract.myaccount.testnet writeProduct '{"productName": "tea", "id": "1"}' --accountId=myaccount.testnet
+near call mycontract.myaccount.testnet setProduct '{"productName": "tea", "id": "1"}' --accountId=myaccount.testnet
 ```
+
+If you use PowerSchell or CMD on Windows, you might need to pass the payload using double-quotes only escaping inner ones that wrap properties names and values:
+```bash=
+near call mycontract.myaccount.testnet writeProduct "{\"productName\": \"tea\", \"id\": \"1\"}" --accountId=myaccount.testnet
+```
+
 where `mycontract.myaccount.testnet` is the contract name name from the [Create a subaccount for a smart contract](#Create-a-subaccount-for-a-smart-contract)  step.
 
-`writeProduct` is the name of the method that we are calling and the JSON that follows it is a payload that has the same property names as it's defined in the method's signature.
+`setProduct` is the name of the method that we are calling and the JSON that follows it is a payload that has the same property names as it's defined in the method's signature.
 
 And the last part is `--accountId` which in our case is the same as `CONTRACT_NAME`.
 
 If the call is successful, you should see a response similar to this:
 ```
-Scheduling a call: mycontract.myaccount.testnet.writeProduct({"productName": "tea", "id": "1"})
+Scheduling a call: mycontract.myaccount.testnet.setProduct({"productName": "tea", "id": "1"})
 Doing account.functionCall()
 Transaction Id 5fVaRBYUjiX3HaYu14Sm1StfUQLMrsr9CvPKht7PQDQi
 To see the transaction in the transaction explorer, please open this url in your browser
@@ -311,7 +317,6 @@ Now when we are sure that the contract compiles and builds successfully, and we 
 In most cases having a product's name and its quantity is not enough. We can add more details about a product by defining one via class.
 
 Now we switch to `model.ts` and create a class that would be a definition of a product:
-
 ```javascript=
 import { PersistentUnorderedMap, u128, context } from "near-sdk-as";
 
@@ -346,9 +351,9 @@ export const listedProducts = new PersistentUnorderedMap<string, Product>("LISTE
 
 This class is pretty straightforward except for one thing: new data types.
 Here for `sold` and `price` we use `u32` and `u128` datatypes from the
-`near-sdk-as`. These are numeric data types specific to NEAR. You can still use Typescript's numeric data types however to avoid data type conversions in the smart contract it might be better to use NEAR types.
+`near-sdk-as`. These are numeric (unsigned integers) data types specific to NEAR. You can still use Typescript's numeric data types however to avoid data type conversions in the smart contract it might be better to use NEAR types.
 
-`u128` allows storing `price`  in yocto-NEAR, where `1 yocto = 1^-24`.
+`u128` allows storing `price`  in yocto-NEAR, where 1 [yocto](https://www.nanotech-now.com/metric-prefix-table.htm) = 10<sup>24</sup> which is a minimum denomination in NEAR.
 Do not forget to import `u128` from `near-sdk-as`.
 
 That's pretty much it except for one thing. `Product` is defined outside the entry point `index.ts` and we must tell NEAR to use this class from `model.ts`. 
@@ -369,11 +374,7 @@ Also, we create `listedProducts` map (in `model.ts`) where we are going to store
 ```javascript=
 import { Product, listedProducts } from './model';
 
-export function writeProduct(product: Product): void {
-    writeProductInternally(product);
-}
-
-function writeProductInternally(product: Product): void {
+export function setProduct(product: Product): void {
     let storedProduct = listedProducts.get(product.id);
     if (storedProduct !== null) { // 1
         throw new Error(`a product with ${product.id} already exists`);
@@ -389,7 +390,6 @@ export function getProducts(): Product[] {
     return listedProducts.values();
 }
 ```
-where `writeProductInternally` is a helper function to write a product to the storage.
 
 At line `1` we check if a product with the given id already exists. If it does, we just throw an error so the existing product won't be overridden.
 
@@ -397,9 +397,15 @@ Next, we create a new product based on the argument `product` using the `Product
 
 Also, we added `getProducts()` method that returns all products added.
 
-Here we have made a very important change - we changed `writeProduct`'s signature so now it accepts a `product` object instead of two properties - `id` and `productName`. Together with that, we switched to another `PersistentUnorderedMap` - `listedProducts` which now holds `Product` as the value and `listedProducts` (do not forget to import it to `index.ts`).
+Here we have made a very important change - we changed `setProduct`'s signature so now it accepts a `product` object instead of two properties - `id` and `productName`. Together with that, we switched to another `PersistentUnorderedMap` - `listedProducts` which now holds `Product` as the value and `listedProducts` (do not forget to import it to `index.ts`).
 
-Now we need to redeploy a smart contract.
+### Contract redeployment
+
+Now that we changed functions signatures, we would need to deploy a brand-new contract in order to use updated functions. But that's not the case in NEAR.
+
+NEAR API is pretty flexible in terms of introducing changes into an existing smart contract - we can just redeploy it. That's it.
+
+The procedure is exactly the same as the initial deployment - we need to build a `.wasm` file and then deploy using `near deploy` command. However, this time you will be prompted to confirm that action because NEAR already nows that there is a previously deployed contract for a given address.
 
 First, let's build and deploy a smart contract:
 ```bash=
@@ -408,14 +414,14 @@ yarn asb
 near deploy --accountId=mycontract.myaccount.testnet --wasmFile=build/release/${WASM_FILE_NAME}
 ```
 
-Now that we have a `product` object as a parameter we should wrap all product-related properties with an object with `product` key. So `writeProduct` call should look like this:
+Now that we have a `product` object as a parameter we should wrap all product-related properties with an object with `product` key. So `setProduct` call should look like this:
 ```bash=
-near call mycontract.myaccount.testnet writeProduct '{"product": {"id": "1", "name": "product_name", "description": "product_description", "location": "image_location", "price": "10000000000"}}' --accountId=myaccount.testnet
+near call mycontract.myaccount.testnet setProduct '{"product": {"id": "1", "name": "product_name", "description": "product_description", "location": "image_location", "price": "10000000000"}}' --accountId=myaccount.testnet
 ```
 
 Let's add some product:
 ```bash=
-near call mycontract.myaccount.testnet writeProduct '{"product": {"id": "5", "name": "coffee", "description": "arabica special", "location": "Kenya", "price": "30000000000000000000000000", "image": "coffee.png"}}' --accountId=myaccount.testnet
+near call mycontract.myaccount.testnet setProduct '{"product": {"id": "5", "name": "coffee", "description": "arabica special", "location": "Kenya", "price": "30000000000000000000000000", "image": "coffee.png"}}' --accountId=myaccount.testnet
 ```
 
 And another invocation of `getProduct(id: string)` to make sure that everything is stored as expected.
@@ -426,7 +432,7 @@ near view mycontract.myaccount.testnet getProduct '{"id": "5"}'
 
 You should see the output like this:
 ```
-View call: mycontract1.tarras.testnet.getProduct({"id": "5"})
+View call: mycontract.myaccount.testnet.getProduct({"id": "5"})
 {
   id: '5',
   name: 'coffee',
@@ -434,7 +440,7 @@ View call: mycontract1.tarras.testnet.getProduct({"id": "5"})
   image: 'coffee.png',
   location: 'Kenya',
   price: '30000000000000000000000000',
-  owner: 'tarras.testnet',
+  owner: 'myaccount.testnet',
   sold: 0
 }
 ```
@@ -461,7 +467,7 @@ As we already know, the attached deposit can be taken from the `context` object 
 And the receiving account can be taken from the `Product` class where the `owner` property is defined.
 
 Having added this, funds can be transferred to another account. 
-Now let's define a `buyProduct` function:
+Now let's define a `buyProduct` function in the `index.ts` file:
 
 ```javascript=
 import { ContractPromiseBatch, context } from 'near-sdk-as';
@@ -513,7 +519,7 @@ where:
 Also, in this call `${BUYER_ACCOUNT}` is an id of the account that we created at the previous step.
 
 ```bash=
-near call mycontract.myaccount.testnet buyProduct '{"productId": "5"}' --depositYocto=30000000000000000000000000 --accountId=testbuyer.myaccount.testnet
+near call mycontract.myaccount.testnet buyProduct '{"productId": "5"}' --depositYocto=30000000000000000000000000 --accountId=buyeraccount.myaccount.testnet
 ```
 
 If there are no errors, we should see the output like this: 
@@ -538,15 +544,15 @@ near view mycontract.myaccount.testnet getProduct '{"id": "5"}'
 
 And the output should look like this:
 ```
-View call: mycontract1.tarras.testnet.getProduct({"id": "5"})
+View call: mycontract.myaccount.testnet.getProduct({"id": "5"})
 {
   id: '5',
   name: 'coffee',
   description: 'arabica special',
-  image: null,
+  image: 'coffee.png',
   location: 'Kenya',
   price: '30000000000000000000000000',
-  owner: 'tarras.testnet',
+  owner: 'myaccount.testnet',
   sold: 1
 }
 ```
