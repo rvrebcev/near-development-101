@@ -27,10 +27,9 @@ We recommend using a code editor that supports code completion and syntax highli
 Now we will set up our project.
 
 #### `asconfig.json`
-In our root directory we need to create a file called `asconfig.json`. 
-This config file provides CLI options and configurations for AssemblyScript like compile targets.
+In our root directory, we need to create a file called `asconfig.json`. This config file provides CLI options and configurations for AssemblyScript.
 
-To compile with the `near-sdk-as`, we will need to add the following to our `asconfig.json` file:
+To compile with the `near-sdk-as`, we will need to add the following to the `asconfig.json` file:
 ```javascript=
 {
     "extends": "near-sdk-as/asconfig.json"
@@ -38,7 +37,7 @@ To compile with the `near-sdk-as`, we will need to add the following to our `asc
 ```
 
 #### `assembly/tsconfig.json`
-We create the `assembly/tsconfig.json` file in our `assembly` directory. This file aims to specify compiler options and root level files that are necessary to compile TypeScript projects.
+We create an `assembly` directory and the `assembly/tsconfig.json` file inside it. This file aims to specify compiler options and root level files that are necessary to compile TypeScript projects.
 
 The `tsconfig.json` file needs to be in the root directory of the TypeScript project.
 ```javascript=
@@ -86,7 +85,7 @@ The final project structure should look like this:
 In this section we will learn how to store data in the smart contract.
 
 ### Storage
-Our smart contracts will need to store data in the blockchain. NEAR offers different storage options depending on the use case and the data type.
+Our smart contracts will need to store data on the blockchain. NEAR offers different storage options depending on the use case and the data type.
 
 We will use the `Storage` class from the `near-sdk-as`, which offers a great API to store and retrieve data from the blockchain. We can choose between the following collection types:
 
@@ -105,9 +104,9 @@ For instance, calling `PersistentUnorderedMap#getSome(key: K)` and retrieving da
 ## Read and Write Contract
 In this section of the tutorial, we are going to write a simple smart contract that will store and retrieve data from the blockchain.
 
-We will write that this contract in our `assembly/index.ts` file.
+We will write this contract in our `assembly/index.ts` file.
 
-Lets start by importing the `PersistentUnorderedMap` class from the `near-sdk-as` at the top of the file:
+Let's start by importing the `PersistentUnorderedMap` class from the `near-sdk-as` at the top of the file:
 ```javascript=
 import { PersistentUnorderedMap } from "near-sdk-as";
 ```
@@ -116,7 +115,7 @@ Next, we create a `PersistentUnorderedMap` instance to store our products:
 ```javascript=
 export const products = new PersistentUnorderedMap<string, string>("PRODUCTS");
 ```
-We create a constant variable called `products` that is an `PersistentUnorderedMap` that maps product ids of type `string` to product names of type `string`.
+We create a constant variable called `products` that is an `PersistentUnorderedMap` that will map product ids of type `string` to product names of type `string`.
 
 The string `PRODUCTS` in the `PersistentUnorderedMap`'s constructor is the unique prefix to use for every key.
 
@@ -147,7 +146,7 @@ We export the `getProduct` function and just have one parameter `id`, which is t
 
 The return type of the function is `string | null`, since we can return either a product name or `null` if the product doesn't exist.
 
-In the function body we call the `get` function on the `products` instance, pass the key as a parameter and return the value.
+In the function body we call the `get` function on the `products` mapping, pass the key as a parameter and return the value.
 
 The final code for this section looks like this:
 ```javascript=
@@ -227,14 +226,14 @@ The compiled wasm code will be store in a file called `${CONTRACT_NAME}.wasm` in
 ${PROJECT_ROOT}/build/release/${CONTRACT_NAME}.wasm
 ```
 
-`${CONTRACT_NAME}` referrs to the name of your project, that you can find in your package.json file.
+`${CONTRACT_NAME}` refers to the name of your project, that you can find in your package.json file.
 
 ### Deploy the Contract
 To deploy our smart contract to the NEAR testnet, we need to run the following command:
 ```bash=
 near deploy --accountId=${ACCOUNT_ID} --wasmFile=${PATH_TO_WASM}
 ```
-* `${ACCOUNT_ID}` - the id of the account that will deploy the smart contract.
+* `${ACCOUNT_ID}` - the id of the account that will deploy the smart contract to.
 * `${PATH_TO_WASM}` - the path to the `.wasm` file that contains the compiled smart contract.
 
 In our case the deploy command could look like this:
@@ -293,7 +292,7 @@ near view ${CONTRACT_ACCOUNT_ID} ${METHOD_NAME} ${PAYLOAD}
 
 Since we don't need to pay any gas we can omit the account id at the end.
 
-If want to retrieve the product we just added, the call could look like this:
+If we want to retrieve the product we just added, the call could look like this:
 ```bash=
 near view mycontract.myaccount.testnet getProduct '{"id": "0"}'
 ```
@@ -307,7 +306,7 @@ View call: mycontract.myaccount.testnet.getProduct({"id": "0"})
 Now you are able to compile and deploy your contract to the NEAR testnet and interact with it.
 
 ## Contract with Product Model
-In this section we are going to write a second iteration of our contract.
+In this section, we are going to write a second iteration of our contract that can store more than just a string.
 
 ### Create Product Model
 We are going to use a model called a `Product` to represent our products, because we want to be able to store more than just the name of the product. A model is a custom data container that defines a new type and consists of an AssamblyScript class.
@@ -383,11 +382,11 @@ export function getProducts(): Product[] {
 
 We first import the `Product` class and the `listedProducts` map.
 
-Then we modify the `setProduct` function to adjust it to use the new `Product` class and the `listedProducts` map. We first check if the product id already exists in the map. If it does, we throw an error. Otherwise, we call the `fromPayload` method to create a new `Product` object from the payload.
+Then we modify the `setProduct` function to adjust it to use the new `Product` class and the `listedProducts` map. We first check if the product id already exists in the map. If it does, we throw an error. Otherwise, we call the `fromPayload` method to create a new `Product` object from the payload and store it in the `listedProducts` map.
 
 We also modify the `getProduct` function to adjust it to use the new `Product` class and the `listedProducts` map.
 
-Finally, we create the `getProducts` function to return all the products in the map.
+Finally, we create the `getProducts` function to return all products in the map.
 
 ### Contract Redeployment
 NEAR allows us to update our contract code on the blockchain. We can do this by redeploying the contract.
@@ -420,7 +419,7 @@ View call: mycontract.myaccount.testnet.getProduct({"id": "0"})
   name: 'BBQ',
   description: 'Grilled chicken and beef served with vegetables and chips.',
   location: 'Berlin, Germany',
-  price: '30000000000000000000000000',
+  price: '1000000000000000000000000',
   image: 'https://i.imgur.com/yPreV19.png',
   owner: 'myaccount.testnet',
   sold: 0
@@ -432,7 +431,7 @@ That's it! We have successfully added a new product to our contract.
 ## Contract with Buy Function
 For the final section of this tutorial, we will create the `buyProduct` function to allow a user to buy a product.
 
-The `near-sdk-as` library provides a `ContractPromiseBatch` class which allows us batch actions within an AssemblyScript contract. We will use this class to transfer tokens from the caller of the function to the owner of the product.
+The `near-sdk-as` library provides a `ContractPromiseBatch` class which allows us to batch actions within an AssemblyScript contract. We will use this class to transfer tokens from the caller of the function to the owner of the product.
 
 The code for a token transfer looks like this:
 ```javascript=
@@ -465,7 +464,7 @@ export function buyProduct(productId: string): void {
     listedProducts.set(product.id, product);
 }
 ```
-First, we retrieve the product with the specified id with the `getProduct` function. 
+First, we retrieve the product with the specified id through the `getProduct` function. 
 
 Then we check if the product exists. If it doesn't, we throw an error ("product not found"). Otherwise, we check if the attached deposit is equal to the product's price. If it isn't, we throw an error ("attached deposit should equal to the product's price").
 
@@ -519,21 +518,21 @@ Then we can redeploy the contract to the same account id as before:
 near deploy --accountId=mycontract.myaccount.testnet --wasmFile=build/release/${WASM_FILE_NAME}
 ```
 
-Now let's test our contract by calling the `buyProduct` function. In order to do that we will create a new sub-account that will act as the buyer and transfer some tokens to it:
+Let's test our contract by calling the `buyProduct` function. To do that, we will create a new sub-account that will act as the buyer and transfer some tokens to it:
 ```bash=
 near create-account buyeraccount.myaccount.testnet --masterAccount myaccount.testnet --initialBalance 6
 ```
 
-Now we are ready to buy a product with, here is how the code for buying a product looks like:
+Now we are ready to buy a product with the account. Here is how the code for buying a product looks like:
 ```bash=
-near call mycontract.myaccount.testnet buyProduct '{"productId": "0"}' --depositYocto=30000000000000000000000000 --accountId=buyeraccount.myaccount.testnet
+near call mycontract.myaccount.testnet buyProduct '{"productId": "0"}' --depositYocto=1000000000000000000000000 --accountId=buyeraccount.myaccount.testnet
 ```
 
 New in this call is the `--depositYocto` parameter. This parameter specifies the amount of tokens that the buyer will attach to the transaction. In this case, we are attaching 3 NEAR tokens in Yocto-NEAR. We execute this call from the buyer account of course.
 
 If we don't have any errors, we should see the following output:
 ```
-Scheduling a call: mycontract.myaccount.testnet.buyProduct({"productId": "0"}) with attached 3 NEAR
+Scheduling a call: mycontract.myaccount.testnet.buyProduct({"productId": "0"}) with attached 1 NEAR
 Doing account.functionCall()
 Transaction Id ${TRANSACTION_ID}
 To see the transaction in the transaction explorer, please open this URL in your browser
@@ -541,7 +540,7 @@ https://explorer.testnet.near.org/transactions/${TRANSACTION_ID}
 ''
 ```
 
-Lets see if the transaction went through correctly. Copy the link to the block explorer of the testnet and open it in your browser. You should see the transaction in the transaction explorer, check if the transaction went through correctly and the token transfer amount is 3 NEAR.
+Let's see if the transaction went through correctly. Copy the link to the block explorer of the testnet and open it in your browser. You should see the transaction in the transaction explorer, check if the transaction went through correctly, and the token transfer amount is 1 NEAR.
 
 Next, we will check if the product was bought correctly. We will use the `getProduct` function to retrieve the product and check if the `sold` field is equal to 1.
 
@@ -551,19 +550,19 @@ near view mycontract.myaccount.testnet getProduct '{"id": "0"}'
 
 The output should now look like this:
 ```
-View call: mycontract.myaccount.testnet.getProduct({"id": "5"})
+View call: mycontract.myaccount.testnet.getProduct({"id": "0"})
 {
   id: '0',
   name: 'BBQ',
   description: 'Grilled chicken and beef served with vegetables and chips.',
   location: 'Berlin, Germany',
-  price: '30000000000000000000000000',
+  price: '1000000000000000000000000',
   image: 'https://i.imgur.com/yPreV19.png',
   owner: 'myaccount.testnet',
   sold: 1
 }
 ```
 
-That's it! We have successfully a contract for a decentralized marketplace. 
+That's it! We have successfully written a contract for a decentralized marketplace. 
 
 Next, have a look into our learning module that explains how to build the frontend for the marketplace.
