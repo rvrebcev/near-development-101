@@ -1,6 +1,12 @@
 In this learning module, we will follow a tutorial to build the frontend for a marketplace contract.
 This tutorial assumes that you have already completed the [Connect a React Dapp to NEAR](/near101_chapter_2.md) learning module and continue in the same project.
 
+### Prerequisites
+
+- [Node JS](https://nodejs.org/en/download/) - Please make sure you have Node.js v16 or higher installed.
+- You should have a basic understanding of [React](https://reactjs.org/): know how to use JSX, props, state, lifecycle methods, and hooks.
+- You should have followed the [Connect a React Dapp to NEAR](/near101_chapter_2.md) learning module and have `react`, `react-scripts` v.2.1.4, `near-api-js` and `uuid` installed.
+
 ### Tech Stack
 
 We will use the following tech stack:
@@ -8,12 +14,6 @@ We will use the following tech stack:
 - [React](https://reactjs.org/) - A JavaScript library for building user interfaces.
 - [Bootstrap](https://getbootstrap.com/) - A CSS framework.
 - [near-api-js](https://docs.near.org/docs/api/javascript-library) - A JavaScript/Typescript library for interacting with NEAR's blockchain.
-
-### Prerequisites
-
-- [Node JS](https://nodejs.org/en/download/) - Please make sure you have Node.js v16 or higher installed.
-- You should have a basic understanding of [React](https://reactjs.org/): know how to use JSX, props, state, lifecycle methods, and hooks.
-- You should have followed the [Connect a React Dapp to NEAR](/near101_chapter_2.md) learning module and have `react`, `react-scripts` v.2.1.4, `near-api-js` and `uuid` installed.
 
 ## 1. Project Setup
 

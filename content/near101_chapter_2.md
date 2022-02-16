@@ -1,17 +1,17 @@
 In this learning module, we will follow a tutorial to connect to a marketplace contract on the NEAR testnet.
 
+### Prerequisites
+
+- You should have created and deployed a NEAR smart contract for the marketplace as described in our [AssemblyScript contract development](/near101_chapter_1.md) learning module.
+- [Node JS](https://nodejs.org/en/download/) - Please make sure you have Node.js v16 or higher installed.
+- You should have a basic understanding of [React](https://reactjs.org/): know how to use JSX, props, state, lifecycle methods, and hooks.
+
 ### Tech Stack
 
 We will use the following tech stack:
 
 - [React](https://reactjs.org/) - A JavaScript library for building user interfaces.
 - [near-api-js](https://docs.near.org/docs/api/javascript-library) - A JavaScript/Typescript library for interacting with NEAR's blockchain.
-
-### Prerequisites
-
-- You should have created and deployed a NEAR smart contract for the marketplace as described in our [AssemblyScript contract development](/near101_chapter_1.md) learning module.
-- [Node JS](https://nodejs.org/en/download/) - Please make sure you have Node.js v16 or higher installed.
-- You should have a basic understanding of [React](https://reactjs.org/): know how to use JSX, props, state, lifecycle methods, and hooks.
 
 ## 1. Project Setup
 

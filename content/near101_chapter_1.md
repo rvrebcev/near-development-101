@@ -2,6 +2,20 @@ In this learning module, we will learn how to create a smart contract for a dece
 
 We will use AssemblyScript to write our NEAR smart contracts in this learning module. Writing AssamblyScript code is very similar to writing TypeScript code. But there are a few things specific to writing NEAR smart contracts in AssemblyScript, that we will cover in the following sections.
 
+### Prerequisites
+
+- Have some basic knowledge of Blockchain technology and smart contracts.
+- Have some basic JavaScript knowledge.
+- Be comfortable using a terminal.
+
+### Tech Stack
+
+We will use the following tech stack:
+
+- [near-cli](https://www.npmjs.com/package/near-cli) - A CLI tool for NEAR that offers an API to interact with smart contracts.
+- [assemblyscript](https://www.npmjs.com/package/assemblyscript) - A TypeScript-like language for WebAssembly.
+- [asbuild](https://www.npmjs.com/package/asbuild) - A build tool for AssemblyScript.
+
 ## 1. Setup
 
 In this first section of the learning module, we will set up our development environment and project.
@@ -11,13 +25,7 @@ We will also use the package manager yarn, so make sure to have that installed t
 
 ### 1.1 Install CLI Tools
 
-We will need to install the following CLI tools:
-
-- `near-cli` - a CLI tool for NEAR that offers an API to interact with smart contracts.
-- `assemblyscript` - a TypeScript-like language for WebAssembly.
-- `asbuild` - a build tool for AssemblyScript.
-
-You can install the latest versions of these tools globally by running the following commands:
+You can install the latest versions of CLI tools globally by running the following commands:
 
 ```bash=
 yarn add global near-cli
@@ -644,5 +652,7 @@ View call: mycontract.myaccount.testnet.getProduct({"id": "0"})
 ```
 
 That's it! We have successfully written a contract for a decentralized marketplace.
+
+You can find the code for this project on [GitHub](https://github.com/dacadeorg/near-marketplace-dapp/tree/master/smartcontract).
 
 Next, you can look at our learning modules that explain how to build the frontend for the marketplace.
