@@ -282,7 +282,7 @@ Here we use the `initializeContract` utility function from the `utils/near.js` f
 
 Now you can start the app:
 
-```sh
+```bash
 npm start
 ```
 
