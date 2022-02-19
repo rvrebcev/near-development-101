@@ -1,6 +1,6 @@
-In this learning module, we will learn how to create a smart contract for a decentralized marketplace on the NEAR blockchain.
+This learning module consists of a tutorial, where you will learn how to create a smart contract for a decentralized marketplace on the NEAR blockchain.
 
-We will use AssemblyScript to write our NEAR smart contracts in this learning module. Writing AssemblyScript code is very similar to writing TypeScript code. But there are a few things specific to writing NEAR smart contracts in AssemblyScript, that we will cover in the following sections.
+We will use AssemblyScript to write our NEAR smart contracts. Writing AssemblyScript code is very similar to writing TypeScript code. But there are a few things specific to writing NEAR smart contracts in AssemblyScript, that we will cover in the following sections.
 
 ### Prerequisites
 
@@ -18,10 +18,10 @@ We will use the following tech stack:
 
 ## 1. Setup
 
-In this first section of the learning module, we will set up our development environment and project.
+In this first section of the tutorial, we will set up our development environment and project.
 
-In this learning module, we will need to have a version of node.js higher or equal to 12 installed.
-We will also use the package manager yarn, so make sure to have that installed too.
+We will need to have a version of node.js higher or equal to 12 installed.
+We will also use the package manager yarn, so make sure to have that installed.
 
 ### 1.1 Install CLI Tools
 
@@ -33,11 +33,11 @@ yarn add global assemblyscript
 yarn add global asbuild
 ```
 
-We recommend using a code editor that supports code completion and syntax highlighting for TypeScript to help you write AssemblyScript code like Visual Studio Code or Atom. During this course we are going to use Visual Studio Code.
+We recommend using a code editor that supports code completion and syntax highlighting for TypeScript to help you write AssemblyScript code like Visual Studio Code or Atom. We will use Visual Studio Code for this learning module.
 
 ### 1.2 Project Setup
 
-Now we will set up our project. First, let's create a root directory `near-course` where we put all things together.
+Now we will set up our project. Please create a new root directory for your project and call it something like `near-marketplace-contract`.
 
 #### 1.2.1 `asconfig.json`
 
@@ -51,7 +51,7 @@ To compile with the `near-sdk-as`, we will need to add the following to the `asc
 }
 ```
 
-#### 1.2.2 `assembly/tsconfig.json`
+#### 1.2.2 `tsconfig.json`
 
 We create an `assembly` directory and the `assembly/tsconfig.json` file inside it. This file aims to specify compiler options and root level files that are necessary to compile TypeScript projects.
 
@@ -66,7 +66,7 @@ The `tsconfig.json` file needs to be in the root directory of the TypeScript pro
 }
 ```
 
-#### 1.2.3 `assembly/as_types.d.ts`
+#### 1.2.3 `as_types.d.ts`
 
 We create the `assembly/as_types.d.ts` file in our `assembly` directory. This file is used to define types that are used in our AssemblyScript code.
 In this case, we import the types from the `near-sdk-as`.
@@ -150,7 +150,7 @@ We create a constant variable called `products` that is an `PersistentUnorderedM
 
 The string `PRODUCTS` in the `PersistentUnorderedMap`'s constructor is the unique prefix to use for every key.
 
-### 3.1 Change Function
+### 3.1 Write Function
 
 Lets create a function to add a new product to the `products` map:
 
@@ -200,17 +200,18 @@ export function getProduct(id: string): string | null {
 }
 ```
 
-Warning! The key for the persistent collection should be as short as possible to prevent the contract from using too much space because this key will be repeated for every record in the collection. For sake of this course and for more clarity, we use `PRODUCTS` as the key.
+**Disclaimer** The key for the persistent collection should be as short as possible to reduce storage space because this key will be repeated for every record in the collection. Here, we only used the longer `PRODUCTS` key to add more readability for first-time NEAR developers.
 
 ## 4. Create Accounts
 
 In order to test our smart contracts on the NEAR testnet, we need to create two accounts.
 
-### 4.1 Create accounts using NEAR Wallet
+We will create one account that we will use to interact with the smart contract, and another account that we will deploy the smart contract to.
+The second account will be a subaccount of the first account, and will look like a subdomain.
 
-We should create one account to interact with the smart contract, and another account the smart contract itself:
-* `myaccount.testnet` - an account to interract with the contract
-* `mycontract.testnet` - an account for the smart contract
+For this learning module we will use `myaccount.testnet` as the first account and create a subaccount of it called `mycontract.myaccount.testnet`, where we are going to deploy our smart contract to.
+
+### 4.1 Create a Top-Level Account
 
 Go to the [NEAR Testnet wallet](https://wallet.testnet.near.org/) page and create a new account by following these steps:
 
@@ -225,7 +226,40 @@ Here is a GIF showing the steps above:
 
 Now your test account is created and you should be able to use it. Your account will already have a balance of NEAR testnet tokens, so you don't need to use a faucet.
 
-Repeat the same steps to create an account for the smart contract.
+Next we will create a subaccount using the `near-cli`.
+
+### 4.2 Login to the NEAR CLI
+
+To log into your new account, open a terminal and run the following `near-cli` command:
+
+```bash=
+near login
+```
+
+This command should open a new tab in your browser and ask you to log into your NEAR account. You will be asked to grant permmissions to the `near-cli` to access your account.
+
+Now you are authenticated for this session and you can make transactions, like deployment and contract interaction calls via the `near-cli`.
+
+Here is a GIF showing the steps above:
+![](https://github.com/dacadeorg/near-development-101/raw/master/content/gifs/login_to_shell.gif)
+
+### 4.3 Create a Subaccount
+
+To create a subaccount for your account, run the following command:
+
+```bash=
+near create-account ${SUBACCOUNT_ID}.${ACCOUNT_ID} --masterAccount ${ACCOUNT_ID} --initialBalance ${INITIAL_BALANCE}
+```
+
+- `SUBACCOUNT_ID` - id of the subaccount.
+- `ACCOUNT_ID` - id of the top-level account.
+- `INITIAL_BALANCE` - initial balance for the subaccount in NEAR tokens.
+
+As stated earlier we want to use the subaccount to deploy our smart contract to. So in our case an example call to create a subaccount could look like this:
+
+```bash=
+near create-account mycontract.myaccount.testnet --masterAccount myaccount.testnet --initialBalance 5
+```
 
 ## 5. Compile and Deploy
 
@@ -245,40 +279,23 @@ The compiled wasm code will be store in a file called `${CONTRACT_NAME}.wasm` in
 ${PROJECT_ROOT}/build/release/${CONTRACT_NAME}.wasm
 ```
 
-`${CONTRACT_NAME}` refers to the name of your project and in our case it's `near-course`.
+`${CONTRACT_NAME}` refers to the name of your project, that you can find in your package.json file.
 
-### 5.2 Login to the NEAR CLI
-
-Before deploying a contract we should login to `near-cli` in the shell.
-
-To log into your new account, open a terminal and run the following `near-cli` command:
-
-```bash=
-near login
-```
-
-This command should open a new tab in your browser and ask you to log into your NEAR account. You will be asked to grant permmissions to the `near-cli` to access your account. At this step we must login to the smart contract account - `mycontract.testnet`.
-
-Now you are authenticated for this session and you can make transactions, like deployment and contract interaction calls via the `near-cli`.
-
-Here is a GIF showing the steps above:
-![](https://github.com/dacadeorg/near-development-101/raw/master/content/gifs/login_to_shell.gif)
-
-### 5.3 Deploy the Contract
+### 5.2 Deploy the Contract
 
 To deploy our smart contract to the NEAR testnet, we need to run the following command:
 
 ```bash=
-near deploy --accountId=${CONTRACT_ACCOUNT_ID} --wasmFile=${PATH_TO_WASM}
+near deploy --accountId=${ACCOUNT_ID} --wasmFile=${PATH_TO_WASM}
 ```
 
-- `${CONTRACT_ACCOUNT_ID}` - the id of the smart contract account (`mycontract.testnet`).
+- `${ACCOUNT_ID}` - the id of the account that will deploy the smart contract to.
 - `${PATH_TO_WASM}` - the path to the `.wasm` file that contains the compiled smart contract.
 
 In our case the deploy command could look like this:
 
 ```bash=
-near deploy --accountId=mycontract.testnet --wasmFile=build/release/near-course.wasm
+near deploy --accountId=mycontract.myaccount.testnet --wasmFile=build/release/near-marketplace-contract.wasm
 ```
 
 Now our contract is deployed to the NEAR testnet and we can interact with it.
@@ -290,8 +307,6 @@ In this section of the learning module, we will call the functions on the deploy
 As stated at the beginning of the learning module, there are two types of function calls that we can make: `view` and `change`.
 
 ### 6.1 Calling a Change Function
-
-Before interracting with a contract, we should login to the shell with a non-contract account, in our case it's `myaccount.testnet`.
 
 First, we are going to invoke a `change` function.
 
@@ -309,13 +324,13 @@ near call ${CONTRACT_ACCOUNT_ID} ${METHOD_NAME} ${PAYLOAD} --accountId=${ACCOUNT
 If want to add a new product to the contract we just deployed, the call could look like this:
 
 ```bash=
-near call mycontract.testnet setProduct '{"id": "0", "productName": "tea"}' --accountId=myaccount.testnet
+near call mycontract.myaccount.testnet setProduct '{"id": "0", "productName": "tea"}' --accountId=myaccount.testnet
 ```
 
 If you use PowerShell or CMD on Windows, you might need to escape double quotes in the payload, which could look like this:
 
 ```bash=
-near call mycontract.testnet writeProduct "{\"id\": \"0\", \"productName\": \"tea\"}" --accountId=myaccount.testnet
+near call mycontract.myaccount.testnet writeProduct "{\"id\": \"0\", \"productName\": \"tea\"}" --accountId=myaccount.testnet
 ```
 
 Keep this in mind for the following sections when we have double quotes in the payload.
@@ -323,7 +338,7 @@ Keep this in mind for the following sections when we have double quotes in the p
 If your contract call was successful, you will see something similar to the following output:
 
 ```
-Scheduling a call: mycontract.testnet.setProduct({"id": "0", "productName": "tea"})
+Scheduling a call: mycontract.myaccount.testnet.setProduct({"id": "0", "productName": "tea"})
 Doing account.functionCall()
 Transaction Id ${TRANSACTION_ID}
 To see the transaction in the transaction explorer, please open this url in your browser
@@ -346,13 +361,13 @@ Since we don't need to pay any gas we can omit the account id at the end.
 If we want to retrieve the product we just added, the call could look like this:
 
 ```bash=
-near view mycontract.testnet getProduct '{"id": "0"}'
+near view mycontract.myaccount.testnet getProduct '{"id": "0"}'
 ```
 
 If your contract call was successful, you will see something similar to the following output:
 
 ```
-View call: mycontract.testnet.getProduct({"id": "0"})
+View call: mycontract.myaccount.testnet.getProduct({"id": "0"})
 'tea'
 ```
 
@@ -414,7 +429,7 @@ The `context` object contains addtional information about the transaction. In th
 
 We also create a new map called `listedProducts` which is a persistent unordered map and will replace the `products` map that we previously stored in our `index.ts` file. We could also migrate the data from the `products` map to the `listedProducts` map, but this is an advanced topic that is out of scope for this learning module.
 
-Again, we use `LISTED_PRODUCTS` a as a key for the collection for more clarity. Remeber about the storage usage and pick a shorter key for production releases of your smart contract.
+As explained earlier, we will use a more readable version of a key for `LISTED_PRODUCTS` to provide more readability to our code. To reduce storage space, you should pick a shorter key.
 
 ### 7.2 Update `index.ts`
 
@@ -440,7 +455,7 @@ export function getProducts(): Product[] {
 }
 ```
 
-First, we import the `Product` class and the `listedProducts` map which is a new data structure that was added to the `model.ts` file after we removed `products` map.
+First, we import the `Product` class and the `listedProducts` map which is a new data structure that we added to the `model.ts` file after we removed `products` map.
 
 Then we modify the `setProduct` function to adjust it to use the new `Product` class and the `listedProducts` map. We first check if the product id already exists in the map. If it does, we throw an error. Otherwise, we call the `fromPayload` method to create a new `Product` object from the payload and store it in the `listedProducts` map.
 
@@ -452,8 +467,6 @@ Finally, we create the `getProducts` function to return all products in the map.
 
 NEAR allows us to update our contract code on the blockchain. We can do this by redeploying the contract.
 
-We should login to the smart contract's account again in the shell. Or, to avoid the headache with loggin in to the shell, you can open two shells and login to one as your account, and to another one as a smart contract's account.
-
 We need to compile our new contract first:
 
 ```bash=
@@ -463,31 +476,31 @@ yarn asb
 Then we can redeploy the contract to the same account id as before:
 
 ```bash=
-near deploy --accountId=mycontract.testnet --wasmFile=build/release/near-course.wasm
+near deploy --accountId=mycontract.myaccount.testnet --wasmFile=build/release/${WASM_FILE_NAME}
 ```
 
 Let's add a new product to the contract by calling the `setProduct` function. Since we are using the `Product` class, we need to pass in a payload that is a `Product` object, which could look like this:
 
 ```bash=
-near call mycontract.testnet setProduct '{"product": {"id": "0", "name": "BBQ", "description": "Grilled chicken and beef served with vegetables and chips.", "location": "Berlin, Germany", "price": "30000000000000000000000000", "image": "https://i.imgur.com/yPreV19.png"}}' --accountId=myaccount.testnet
+near call mycontract.myaccount.testnet setProduct '{"product": {"id": "0", "name": "BBQ", "description": "Grilled chicken and beef served with vegetables and chips.", "location": "Berlin, Germany", "price": "30000000000000000000000000", "image": "https://i.imgur.com/yPreV19.png"}}' --accountId=myaccount.testnet
 ```
 
 After a successful `setProduct` call, we can call the `getProduct` function to retrieve the product we just added:
 
 ```bash=
-near view mycontract.testnet getProduct '{"id": "0"}'
+near view mycontract.myaccount.testnet getProduct '{"id": "0"}'
 ```
 
 You should an output similar to the following:
 
 ```
-View call: mycontract.testnet.getProduct({"id": "0"})
+View call: mycontract.myaccount.testnet.getProduct({"id": "0"})
 {
   id: '0',
   name: 'BBQ',
   description: 'Grilled chicken and beef served with vegetables and chips.',
   location: 'Berlin, Germany',
-  price: '3000000000000000000000000',
+  price: '1000000000000000000000000',
   image: 'https://i.imgur.com/yPreV19.png',
   owner: 'myaccount.testnet',
   sold: 0
@@ -578,6 +591,7 @@ export function buyProduct(productId: string): void {
   product.incrementSoldAmount();
   listedProducts.set(product.id, product);
 }
+
 ```
 
 Now we need to compile our contract for the last time:
@@ -589,15 +603,19 @@ yarn asb
 Then we can redeploy the contract to the same account id as before:
 
 ```bash=
-near deploy --accountId=mycontract.testnet --wasmFile=build/release/${WASM_FILE_NAME}
+near deploy --accountId=mycontract.myaccount.testnet --wasmFile=build/release/${WASM_FILE_NAME}
 ```
 
-Let's test our contract by calling the `buyProduct` function. To do that, we should create a new account using NEAR wallet and this one will act as the buyer.
+Let's test our contract by calling the `buyProduct` function. To do that, we will create a new sub-account that will act as the buyer and transfer some tokens to it:
+
+```bash=
+near create-account buyeraccount.myaccount.testnet --masterAccount myaccount.testnet --initialBalance 6
+```
 
 Now we are ready to buy a product with the account. Here is how the code for buying a product looks like:
 
 ```bash=
-near call mycontract.testnet buyProduct '{"productId": "0"}' --depositYocto=30000000000000000000000000 --accountId=buyeraccount.testnet
+near call mycontract.myaccount.testnet buyProduct '{"productId": "0"}' --depositYocto=1000000000000000000000000 --accountId=buyeraccount.myaccount.testnet
 ```
 
 New in this call is the `--depositYocto` parameter. This parameter specifies the amount of tokens that the buyer will attach to the transaction. In this case, we are attaching 3 NEAR tokens in Yocto-NEAR. We execute this call from the buyer account of course.
@@ -605,7 +623,7 @@ New in this call is the `--depositYocto` parameter. This parameter specifies the
 If we don't have any errors, we should see the following output:
 
 ```
-Scheduling a call: mycontract.testnet.buyProduct({"productId": "0"}) with attached 30 NEAR
+Scheduling a call: mycontract.myaccount.testnet.buyProduct({"productId": "0"}) with attached 1 NEAR
 Doing account.functionCall()
 Transaction Id ${TRANSACTION_ID}
 To see the transaction in the transaction explorer, please open this URL in your browser
@@ -618,7 +636,7 @@ Let's see if the transaction went through correctly. Copy the link to the block 
 Next, we will check if the product was bought correctly. We will use the `getProduct` function to retrieve the product and check if the `sold` field is equal to 1.
 
 ```bash=
-near view mycontract.testnet getProduct '{"id": "0"}'
+near view mycontract.myaccount.testnet getProduct '{"id": "0"}'
 ```
 
 The output should now look like this:
@@ -629,9 +647,9 @@ View call: mycontract.myaccount.testnet.getProduct({"id": "0"})
   id: '0',
   name: 'BBQ',
   description: 'Grilled chicken and beef served with vegetables and chips.',
-  image: 'https://i.imgur.com/yPreV19.png',
   location: 'Berlin, Germany',
-  price: '30000000000000000000000000',
+  price: '1000000000000000000000000',
+  image: 'https://i.imgur.com/yPreV19.png',
   owner: 'myaccount.testnet',
   sold: 1
 }
