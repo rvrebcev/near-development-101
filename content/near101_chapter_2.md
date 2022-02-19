@@ -99,7 +99,7 @@ export default environment;
 ```
 
 At line 1, we define the name of the smart contract that we want to interact with. This is the name of the account where the smart contract is deployed to.
-We using the contract created in our [AssemblyScript contract development](/near101_chapter_1.md) learning module, so the `${CONTRACT_NAME}` variable would be `mycontract.testnet`. Replace it with the accountID of the account where your smart contract is deployed to.
+We using the contract created in our [AssemblyScript contract development](/near101_chapter_1.md) learning module, so the `${CONTRACT_NAME}` variable would be `mycontract.myaccount.testnet`. Replace it with the accountID of the account where your smart contract is deployed to.
 
 In lines 5 and 14, we define the different environments that we can connect to. In this tutorial, we will only use the testnet.
 
