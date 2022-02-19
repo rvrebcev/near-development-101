@@ -200,7 +200,7 @@ export function getProduct(id: string): string | null {
 }
 ```
 
-**Disclaimer**: The key for the persistent collection should be as short as possible to reduce storage space because this key will be repeated for every record in the collection. Here, we only used the longer `PRODUCTS` key to add more readability for first-time NEAR developers.
+**Warning**: The key for the persistent collection should be as short as possible to reduce storage space because this key will be repeated for every record in the collection. Here, we only used the longer `PRODUCTS` key to add more readability for first-time NEAR developers.
 
 ## 4. Create Accounts
 
