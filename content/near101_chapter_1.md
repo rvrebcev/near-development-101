@@ -33,11 +33,11 @@ yarn add global assemblyscript
 yarn add global asbuild
 ```
 
-We recommend using a code editor that supports code completion and syntax highlighting for TypeScript to help you write AssemblyScript code like Visual Studio Code or Atom. We will use Visual Studio Code for this learning module.
+We recommend using a code editor that supports code completion and syntax highlighting for TypeScript to help you write AssemblyScript code, like Visual Studio Code or Atom. We will use Visual Studio Code for this learning module.
 
 ### 1.2 Project Setup
 
-Now we will set up our project. Please create a new root directory for your project and call it something like `near-marketplace-contract`.
+Now we will set up our project. Please create a new root directory for our project and call it something like `near-marketplace-contract`.
 
 #### 1.2.1 `asconfig.json`
 
@@ -200,7 +200,7 @@ export function getProduct(id: string): string | null {
 }
 ```
 
-**Disclaimer** The key for the persistent collection should be as short as possible to reduce storage space because this key will be repeated for every record in the collection. Here, we only used the longer `PRODUCTS` key to add more readability for first-time NEAR developers.
+**Disclaimer**: The key for the persistent collection should be as short as possible to reduce storage space because this key will be repeated for every record in the collection. Here, we only used the longer `PRODUCTS` key to add more readability for first-time NEAR developers.
 
 ## 4. Create Accounts
 
@@ -455,7 +455,7 @@ export function getProducts(): Product[] {
 }
 ```
 
-First, we import the `Product` class and the `listedProducts` map which is a new data structure that we added to the `model.ts` file after we removed `products` map.
+First, we import the `Product` class and the `listedProducts` map, which is a new data structure that we added to the `model.ts` file after we removed `products` map.
 
 Then we modify the `setProduct` function to adjust it to use the new `Product` class and the `listedProducts` map. We first check if the product id already exists in the map. If it does, we throw an error. Otherwise, we call the `fromPayload` method to create a new `Product` object from the payload and store it in the `listedProducts` map.
 
@@ -482,7 +482,7 @@ near deploy --accountId=mycontract.myaccount.testnet --wasmFile=build/release/${
 Let's add a new product to the contract by calling the `setProduct` function. Since we are using the `Product` class, we need to pass in a payload that is a `Product` object, which could look like this:
 
 ```bash=
-near call mycontract.myaccount.testnet setProduct '{"product": {"id": "0", "name": "BBQ", "description": "Grilled chicken and beef served with vegetables and chips.", "location": "Berlin, Germany", "price": "30000000000000000000000000", "image": "https://i.imgur.com/yPreV19.png"}}' --accountId=myaccount.testnet
+near call mycontract.myaccount.testnet setProduct '{"product": {"id": "0", "name": "BBQ", "description": "Grilled chicken and beef served with vegetables and chips.", "location": "Berlin, Germany", "price": "1000000000000000000000000", "image": "https://i.imgur.com/yPreV19.png"}}' --accountId=myaccount.testnet
 ```
 
 After a successful `setProduct` call, we can call the `getProduct` function to retrieve the product we just added:
@@ -618,7 +618,7 @@ Now we are ready to buy a product with the account. Here is how the code for buy
 near call mycontract.myaccount.testnet buyProduct '{"productId": "0"}' --depositYocto=1000000000000000000000000 --accountId=buyeraccount.myaccount.testnet
 ```
 
-New in this call is the `--depositYocto` parameter. This parameter specifies the amount of tokens that the buyer will attach to the transaction. In this case, we are attaching 3 NEAR tokens in Yocto-NEAR. We execute this call from the buyer account of course.
+New in this call is the `--depositYocto` parameter. This parameter specifies the amount of tokens that the buyer will attach to the transaction. In this case, we are attaching 1 NEAR tokens in Yocto-NEAR. We execute this call from the buyer account of course.
 
 If we don't have any errors, we should see the following output:
 
