@@ -861,4 +861,4 @@ npm install gh-pages
 
 Now you are done and you should be able to see your dapp on `https://${GithubUsername}.github.io/${RepositoryName}`.
 
-Awesome! You have successfully created a your first NEAR dapp. Now you can go ahead and create your own dapp in our challenge and receive feedback and earn some NEAR!
+Awesome! You have successfully created your first NEAR dapp. Now you can go ahead and create your own dapp in our challenge and receive feedback and earn some NEAR!
