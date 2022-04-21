@@ -330,7 +330,7 @@ near call mycontract.myaccount.testnet setProduct '{"id": "0", "productName": "t
 If you use PowerShell or CMD on Windows, you might need to escape double quotes in the payload, which could look like this:
 
 ```bash
-near call mycontract.myaccount.testnet writeProduct "{\"id\": \"0\", \"productName\": \"tea\"}" --accountId=myaccount.testnet
+near call mycontract.myaccount.testnet setProduct "{\"id\": \"0\", \"productName\": \"tea\"}" --accountId=myaccount.testnet
 ```
 
 Keep this in mind for the following sections when we have double quotes in the payload.
