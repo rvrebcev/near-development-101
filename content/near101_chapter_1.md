@@ -379,7 +379,7 @@ In this section, we are going to write a second iteration of our contract that c
 
 ### 7.1 Create Product Model
 
-We are going to use a model called a `Product` to represent our products, because we want to be able to store more than just the name of the product. A model is a custom data container that defines a new type and consists of an AssamblyScript class.
+We are going to use a model called a `Product` to represent our products, because we want to be able to store more than just the name of the product. A model is a custom data container that defines a new type and consists of an AssemblyScript class.
 
 In our assembly directory we are going to create a new file called `assembly/model.ts`.
 
