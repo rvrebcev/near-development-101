@@ -91,6 +91,12 @@ Run the following command to add the `near-sdk-as` to the project:
 yarn add -D near-sdk-as
 ```
 
+Mac M1 users might experince the `Error: Unsupported platform: Darwin arm64` error when attempt to install.
+As a workaround, run the previous command with the `--ignore-scripts` option:
+```
+yarn add -D --ignore-scripts near-sdk-as
+```
+
 In the last step of the initialization process, we will need to create an entry file for the smart contract. Create a file called `index.ts` in the `assembly` directory.
 
 The final project structure should look like this:
